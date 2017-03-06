@@ -23,7 +23,7 @@ void setup() {
     for (i = 0; i < 16; i++) {
       array[i] = Serial.read();
     }
-    delay(100);
+    delay(20);
     for (j = 0; j < 16; j++) {
       if (array[j] != arraytemp[j]) {
         switch (array[j]) {
