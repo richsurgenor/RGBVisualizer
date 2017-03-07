@@ -5,94 +5,71 @@
 
 char val;
 
-int array[16] =    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-int arraytemp[16] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+int array[3] =    {0, 0, 0};
+int arraytemp[3] = {1, 1, 1};
 int i, j, k, r;
 
-CRGB leds[NUM_LEDS];
+float low_multiplier = .8;
+float mid_multiplier = 1;
+float high_multiplier = 1;
+
+//CRGB leds[NUM_LEDS];
+CRGBArray<150> leds;
+//CRGB *realleds[NUM_LEDS];
 
 void setup() {
   // put your setup code here, to run once:
   FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
   Serial.begin(9600);
+  //FastLED.setBrightness(200);
 }
 
  void loop() {
 
   if (Serial.read() == 0xff) {
-    for (i = 0; i < 16; i++) {
-      array[i] = Serial.read();
+    for (i = 0; i < 3; i++) {
+      array[i] = (int) Serial.read();
     }
-    delay(20);
-    for (j = 0; j < 16; j++) {
-      if (array[j] != arraytemp[j]) {
-        switch (array[j]) {
+    for (j = 0; j < 3; j++) {
+      if (array[j] != arraytemp[j] && ( array[j] > 0 && array[j] <= 255)) {
+        switch (j) {
           case 0:
-          setLeds(CRGB::Black, 0, 150);
-          break;
+          Serial.write(0xcc);
+          Serial.write(array[j] + 1);
+          setColorLeds(0, 0, array[j] + 1, 0, 50);
+          //FastLED.setBrightness(array[j]);
+          break;  
           case 1:
-          setLeds(CRGB::Orange, 0, 10);
+          Serial.write(array[j] + 1);
+          setColorLeds(0, array[j] + 1, 0, 51, 100);
+          //FastLED.setBrightness(array[j] * mid_multiplier);   
           break;
           case 2:
-          setLeds(CRGB::Green, 11, 20);
-          break;
-          case 3:
-          setLeds(CRGB::Blue, 21, 30);
-          break;
-          case 4:
-          setLeds(CRGB::Pink, 31, 40);
-          break;
-          case 5:
-          setLeds(CRGB::White, 41, 50);
-          break;
-          case 6:
-          setLeds(CRGB::Orange, 51, 60);
-          break;
-          case 7:
-          setLeds(CRGB::Blue, 61, 70);
-          break;
-          case 8:
-          setLeds(CRGB::Orange, 71, 80);
-          break;
-          case 9:
-          setLeds(CRGB::Blue, 81, 90);
-          break;
-          case 10:
-          setLeds(CRGB::Orange, 91, 100);
-          break;
-          case 11:
-          setLeds(CRGB::Blue, 101, 110);
-          break;
-          case 12:
-          setLeds(CRGB::Orange, 111, 120);
-          break;
-          case 13:
-          setLeds(CRGB::Blue, 121, 130);
-          break;
-          case 14:
-          setLeds(CRGB::Orange, 131, 140);
-          break;
-          case 15:
-          setLeds(CRGB::Blue, 141, 145);
-          break;
-          case 16:
-          setLeds(CRGB::Orange, 146, 150);
-          break;
+          Serial.write(array[j] + 1);
+          setColorLeds(array[j] + 1, 0, 0, 101, 149);
+          //FastLED.setBrightness(array[j]);  
+          break; 
         }
-
+        //FastLED.setBrightness(array[0] * low_multiplier);
         arraytemp[j] = array[j];
 
       }
     }
-
+    FastLED.show();
+    delay(18);
+    //setColorLeds(0, 0, 0, 0, 149);
   }
   //delay(1000);
 }
 
-void setLeds(int color, int begin, int end) {
+void setLeds(CRGB color, int begin, int end) {
   for (int i = begin; i < end; i++) {
     leds[i] = color;
   }
-  FastLED.show();
+}
+
+void setColorLeds(int red, int green, int blue, int low, int high) {
+  
+  for(CRGB & pixel : leds(low,high)) { pixel = CRGB(red, green, blue); } 
 }
 
