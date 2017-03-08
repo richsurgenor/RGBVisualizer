@@ -56,6 +56,7 @@ void setup() {
       }
     }
     FastLED.show();
+    fadeLights();
     delay(18);
     //setColorLeds(0, 0, 0, 0, 149);
   }
@@ -68,8 +69,11 @@ void setLeds(CRGB color, int begin, int end) {
   }
 }
 
+void fadeLights() {
+  for(CRGB & pixel : leds(0,149)) { pixel.fadeToBlackBy(64); }
+}
+
 void setColorLeds(int red, int green, int blue, int low, int high) {
-  
   for(CRGB & pixel : leds(low,high)) { pixel = CRGB(red, green, blue); } 
 }
 

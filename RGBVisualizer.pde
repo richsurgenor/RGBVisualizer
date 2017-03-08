@@ -23,13 +23,13 @@ float sample_rate = 88200;
 
 int spectrum_height = 176; // determines range of dB shown
 
-float low_multiplier = 1;
-float mid_multiplier = 2;
-float high_multiplier = 5;
-
 int[] freq_array = {0,0,0};
 int i,g;
 float f;
+
+float low_multiplier = 1;
+float mid_multiplier = 2;
+float high_multiplier = 5;
 
 // TODO: add a GUI for options
 
@@ -42,7 +42,7 @@ void setup()
   minim = new Minim(this);
   port = new Serial(this, Serial.list()[3], 9600);
 
-  in = minim.getLineIn(Minim.MONO, buffer_size, sample_rate);
+  in = minim.getLineIn(Minim.STEREO, buffer_size, sample_rate);
 
   // create an FFT object for each channel that
   // has a time-domain buffer
@@ -65,9 +65,9 @@ void draw()
   // TODO: Check if calculating the maximum instead of average would be better
   freq_height[0] = fft.calcAvg((float) 0, (float) 1638);
   freq_height[1] = fft.calcAvg((float) 1639, (float) 3240);
-  freq_height[2] = fft.calcAvg((float) 3240, (float) 8874);
+  freq_height[2] = fft.calcAvg((float) 3241, (float) 8874);
 
-  if (freq_height[0] >= 1) {
+ /* if (freq_height[0] >= 1) {
     freq_height[0] = freq_height[0] * low_multiplier;
   }
   if (freq_height[1] >= 1) {
@@ -75,19 +75,28 @@ void draw()
   }
   if (freq_height[2] >= 1) {
     freq_height[2] = freq_height[2] * high_multiplier;
-  }
+  } */
 
   //send to serial
   port.write(0xff); //write marker (0xff) for synchronization
 
+  //byte[] adj_height = {0, 0, 0};
+  
+  //adj_height[0] = freq_height[0] * low_multiplier;
   for(i=0; i<3; i++){
-    port.write((byte)(freq_height[i]));
-    if (i == 0) {
-      System.out.println("low : " + freq_height[0]);
+    port.write((byte)freq_height[i]);
+    /*if (i == 0) {
+      System.out.println("low : " + (byte) freq_height[0]);
     } else if (i == 1) {
-        System.out.println("mid : " + freq_height[1]);
+        System.out.println("mid : " + (byte) freq_height[1]);
     } else if (i == 2) {
-        System.out.println("high : " + freq_height[2]);
-    }
+        System.out.println("high : " + (byte) freq_height[2]);
+    }*/
+  }
+  
+  if (port.read() == 0xcc) {
+    System.out.println("low : " + port.read());
+    System.out.println("mid : " + port.read());
+    System.out.println("high : " + port.read());
   }
 }
