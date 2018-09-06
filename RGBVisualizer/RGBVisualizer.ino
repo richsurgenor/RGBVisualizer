@@ -20,7 +20,7 @@ CRGBArray<150> leds;
 void setup() {
   // put your setup code here, to run once:
   FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
-  Serial.begin(9600);
+  Serial.begin(115200);
   //FastLED.setBrightness(200);
 }
 
@@ -76,4 +76,3 @@ void fadeLights() {
 void setColorLeds(int red, int green, int blue, int low, int high) {
   for(CRGB & pixel : leds(low,high)) { pixel = CRGB(red, green, blue); } 
 }
-

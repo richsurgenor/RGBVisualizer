@@ -40,8 +40,9 @@ void setup()
   size(200, 200);
 
   minim = new Minim(this);
-  port = new Serial(this, Serial.list()[3], 9600);
-
+  
+  printArray(Serial.list());
+  port = new Serial(this, Serial.list()[2], 115200);
   in = minim.getLineIn(Minim.STEREO, buffer_size, sample_rate);
 
   // create an FFT object for each channel that
